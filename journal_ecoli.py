@@ -59,6 +59,7 @@ class CRO_class:
         beta = 30
         TotalMolecule = 0
         T_NumHit = 0
+        c = 0.00001
         # Assign Initial Activation Values to Molecules
         for row in range(MoleNumber):
             for j in range(184):
@@ -1077,28 +1078,38 @@ def read_data(self):
 
         print(y_smote.value_counts())
         cal_accuracy(self, X_smote, y_smote)
-
+        #cal_accuracy(self, X, y)
     CRI_iterations(self)
 
+def objective_unction_gain_check(self,mol_features,child,obj_func_gain):
+    n = 0
+    N=287
+    c = 0.0001
+    for j in range(184):
+        if mol_features[child][j] == 1:
+            n = n + 1
+    new_obj_func_gain = (1-(obj_func_gain/100))-((c*N)/n)
+    print('n= {} Accuracy_Received= {} New_obj_Func_achieved= {}'.format(n,obj_func_gain,new_obj_func_gain))
+    return new_obj_func_gain
 
 def cal_accuracy(self, X, y):
     global MinPE, MinStruct, NumHit, PE, KE, X_smote, y_smote
 
-    # Remove Comment from the line 1089 to execute the program using XGBoost Classifier.
-    # Make comments from lines 1103 to 1115.
+    # Remove Comment from the line 1100 to execute the program using XGBoost Classifier.
+    # Make comments from lines 1114 to 1126.
     #clf = XGBClassifier(max_depth = 3,  scale_pos_weight=4)
     # Remove Comment from the line 1092 to execute the program using XGBoost Classifier.
-    # Make comments from lines 1103 to 1115.
+    # Make comments from lines 1114 to 1126.
     #clf = lgb.LGBMClassifier()
     # Remove Comment from the line 1095 to execute the program using Random Forest Classifier.
-    # Make comments from lines 1103 to 1115.
+    # Make comments from lines 1114 to 1126.
     clf = RandomForestClassifier(n_estimators=100)
 
     #Remove comments from line 1099 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
 
     scores = cross_val_score(estimator=clf, X=X, y=y, cv=10, scoring='accuracy')
 
-    # Remove comments from lines 1103 to 1115 to execute the program using the ensemble method.
+    # Remove comments from lines 1114 to 1126 to execute the program using the ensemble method.
     #Make comments lines from 1089 to 1099.
     #estimators = []
     #estimators.clear()
@@ -1139,7 +1150,8 @@ def CRI_iterations(self):
     count_onwall = 0
     count_synt = 0
     iterate = 1
-
+    Min_obj_func_val = 100
+    # change the constant to 200, 400, 600, 800, or 1000 of the 1155 line to iterate the CRO for 200, 400, 600, 800, and 1000 times respectively.
     while terminate < 1000:
         # Condition For CRO Termination
         print('Iterate no: {}'.format(iterate))
@@ -1350,7 +1362,9 @@ def CRI_iterations(self):
                 # Calculate PE for Child Molecules
                 print('Child1: {} Child2: {}'.format(copy_molecules[child], copy_molecules2[child]))
                 acc_result_child_1 = cal_child_accuracy(self, copy_molecules, child)
+                child1_obj_func_gain = objective_unction_gain_check(self, copy_molecules, child, acc_result_child_1)
                 acc_result_child_2 = cal_child_accuracy(self, copy_molecules2, child)
+                child2_obj_func_gain = objective_unction_gain_check(self, copy_molecules2, child, acc_result_child_2)
                 # PE for parent molecule
                 acc_result_parent = PE[child]
                 sigma_1 = random.uniform(0, 1)
@@ -1373,11 +1387,21 @@ def CRI_iterations(self):
                     NumHit.append(0)
                     TotalMolecule = TotalMolecule + 1
                     # New Optimal Features Found and Assign
-                    if acc_result_child_1 > MinPE:
+                    print('Child 1 objective gain = {} Min objective gain = {}'.format(child1_obj_func_gain,
+                                                                                       Min_obj_func_val))
+                    print('Child 2 objective gain = {} Min objective gain = {}'.format(child2_obj_func_gain,
+                                                                                       Min_obj_func_val))
+                    if child1_obj_func_gain < Min_obj_func_val:
+                        print('Decom Got Imptovement. Child Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child_1, MinPE, P_MinPE))
                         MinPE = acc_result_child_1
+                        Min_obj_func_val = child1_obj_func_gain
                         MinStruct = copy_molecules[child].copy()
-                    elif acc_result_child_2 > MinPE:
+                    elif child2_obj_func_gain < Min_obj_func_val:
+                        print('Decom Got Imptovement. Child Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child_2, MinPE, P_MinPE))
                         MinPE = acc_result_child_2
+                        Min_obj_func_val = child2_obj_func_gain
                         MinStruct = copy_molecules2[child].copy()
                     NumHit[child] = 0
                     T_MinHit = T_NumHit
@@ -1407,6 +1431,8 @@ def CRI_iterations(self):
                     continue
                 print('Child: {} '.format(copy_molecules[child]))
                 acc_result_child = cal_child_accuracy(self, copy_molecules, child)
+                child1_obj_func_gain = objective_unction_gain_check(self, copy_molecules, child, acc_result_child)
+
                 acc_result_parent = PE[child]
                 if acc_result_child > acc_result_parent + KE[child]:
                     alpha1 = random.uniform(KELossRate, 1)
@@ -1417,8 +1443,13 @@ def CRI_iterations(self):
                     NumHit[child] = NumHit[child] + 1
                     molecule[child][rand_position] = copy_molecules[child][rand_position]
 
-                    if MinPE < acc_result_child:
+                    print('Child objective gain = {} Min objective gain = {}'.format(child1_obj_func_gain,
+                                                                                     Min_obj_func_val))
+                    if Min_obj_func_val > child1_obj_func_gain:
+                        print('On Wall Got Imptovement. Child Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child, MinPE, P_MinPE))
                         MinPE = acc_result_child
+                        Min_obj_func_val = child1_obj_func_gain
                         MinStruct = copy_molecules[child].copy()
                         MinHit = NumHit[child]
                         T_MinHit = T_NumHit
@@ -1546,7 +1577,8 @@ def CRI_iterations(self):
                 print('Child: {} '.format(copy_molecules[random_child1]))
 
                 acc_result_child_1 = cal_child_accuracy(self, copy_molecules, random_child1)
-
+                child1_obj_func_gain = objective_unction_gain_check(self, copy_molecules, random_child1,
+                                                                    acc_result_child_1)
                 acc_result_parent1 = PE[random_child1]
                 acc_result_parent2 = PE[random_child2]
                 KE_result_parent1 = KE[random_child1]
@@ -1555,8 +1587,13 @@ def CRI_iterations(self):
                     KE[random_child1] = (acc_result_parent1 + acc_result_parent2 + KE_result_parent1 + KE_result_parent2) - acc_result_child_1
                     PE[random_child1] = acc_result_child_1
                     NumHit[random_child1] = 0
-                    if MinPE < acc_result_child_1:
+                    print('Child objective gain = {} Min objective gain = {}'.format(child1_obj_func_gain,
+                                                                                     Min_obj_func_val))
+                    if (Min_obj_func_val > child1_obj_func_gain):
+                        print('Synthesis Got Imptovement. Child Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child_1, MinPE, P_MinPE))
                         MinPE = acc_result_child_1
+                        Min_obj_func_val = child1_obj_func_gain
                         MinStruct = copy_molecules[random_child1].copy()
                     index = molecule.index(copy_molecules[random_child2])
                     del molecule[index]
@@ -1598,7 +1635,11 @@ def CRI_iterations(self):
                     continue
                 print('Child1: {} Child2: {}'.format(copy_molecules[random_child1], copy_molecules[random_child2]))
                 acc_result_child_1 = cal_child_accuracy(self, copy_molecules, random_child1)
+                child1_obj_func_gain = objective_unction_gain_check(self, copy_molecules, random_child1,
+                                                                    acc_result_child_1)
                 acc_result_child_2 = cal_child_accuracy(self, copy_molecules2, random_child2)
+                child2_obj_func_gain = objective_unction_gain_check(self, copy_molecules2, random_child2,
+                                                                    acc_result_child_2)
                 NumHit[random_child1] = NumHit[random_child1] + 1
                 NumHit[random_child2] = NumHit[random_child2] + 1
                 T_NumHit = T_NumHit + 1
@@ -1621,13 +1662,22 @@ def CRI_iterations(self):
                     NumHit[random_child1] = NumHit[random_child1] + 1
                     NumHit[random_child2] = NumHit[random_child2] + 1
 
-                    if acc_result_child_1 > MinPE and acc_result_child_1 > acc_result_child_2:
+                    print('Child 1 objective gain = {} Child 2 obj gain = {} Min objective gain = {}'.format(
+                        child1_obj_func_gain, child2_obj_func_gain, Min_obj_func_val))
+
+                    if (child1_obj_func_gain < Min_obj_func_val and child1_obj_func_gain < child2_obj_func_gain):
+                        print('Inter Molecule Got Imptovement. Child 1 Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child_1, MinPE, P_MinPE))
                         MinPE = acc_result_child_1
+                        Min_obj_func_val = child1_obj_func_gain
                         MinStruct = molecule[random_child1].copy()
                         MinHit = NumHit[random_child1]
                         T_MinHit = T_NumHit
-                    if acc_result_child_2 > MinPE and acc_result_child_1 < acc_result_child_2:
+                    if (child2_obj_func_gain < Min_obj_func_val and child2_obj_func_gain < child1_obj_func_gain):
+                        print('Inter Molecule Got Imptovement. Child 2 Acc = {} MinPE = {} and P_MinPE = {}: '.format(
+                            acc_result_child_1, MinPE, P_MinPE))
                         MinPE = acc_result_child_2
+                        Min_obj_func_val = child2_obj_func_gain
                         MinStruct = molecule[random_child2].copy()
                         MinHit = NumHit[random_child2]
                         T_MinHit = T_NumHit
@@ -2019,8 +2069,8 @@ def cal_child_accuracy(self, child_Mol, child):
         features.append('GE_T8')
     X = df[features]
     y = df['Essentiality']
-    # Remove comments from the line 2024 and 2025 to execute the program using imbalance dataset.
-    # Make Comments from line 2028 and 2029.
+    # Remove comments from the line 2074 and 2075 to execute the program using imbalance dataset.
+    # Make Comments from line 2078 and 2079.
     #X_smote = X
     #y_smote = y
     #Remove comments from the line 2028 to 2029 to execute the program using EMOTE-ENN balance dataset.
@@ -2041,7 +2091,7 @@ def cal_child_accuracy(self, child_Mol, child):
     # Make comments from line 2050 to 2063.
     clf = RandomForestClassifier(n_estimators=100)
 
-    # Remove comment from line 2046 and 2047 to execute the program using either LightGBM, XGBoost, or Random Forest.
+    # Remove comment from line 2096 and 2097 to execute the program using either LightGBM, XGBoost, or Random Forest.
 
     scores = cross_val_score(estimator=clf, X=X_smote, y=y_smote, cv=10, scoring='accuracy')
     predicted_label = cross_val_predict(estimator=clf, X=X_smote, y=y_smote, cv=10)
