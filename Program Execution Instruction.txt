@@ -41,41 +41,46 @@ To Execute the yeast data on journal_yeast, follow the following instructions:
 To Execute the yeast data on journal_ecoli, follow the following instructions:
 
 	i) To execute the program using Random Forest:
-		- Remove Comment from the line 1095 to execute the program using Random Forest Classifier.
-		- Make comments from lines 1103 to 1115.
-		- Remove comments from line 1099 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
-		- Remove comment from line 2042 to execute the program using Random Forest.
-		- Make comments from line 2050 to 2063.
-		- Remove comment from line 2046 and 2047 to execute the program using either LightGBM, XGBoost, or Random Forest.
+		- Remove Comment from the line 1106 to execute the program using Random Forest Classifier.
+		- Make comments lines 1100 and 1103.
+		- Make comments from lines 1114 to 1126.
+		- Remove comments from line 1110 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
+		- Remove comment from line 2092 to execute the program using Random Forest.
+		- Make comments from line 2100 to 2113.
+		- Remove comment from line 2096 and 2097 to execute the program using either LightGBM, XGBoost, or Random Forest.
 	
 	ii) To execute the program using LightGBM
-		- Remove Comment from the line 1092 to execute the program using XGBoost Classifier.
-		- Make comments from lines 1103 to 1115.
-		- Remove comments from line 1099 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
-		- Remove comment from line 2034 to execute the program using LightGBM.
-		- Make comments from line 2050 to 2063.
-		- Remove comment from line 2046 and 2047 to execute the program using either LightGBM, XGBoost, or Random Forest.
+		- Remove Comment from the line 1103 to execute the program using Lightgbm Classifier.
+		- Make comments lines from 1100 and 1106.
+		- Make comments from lines 1114 to 1126.
+		- Remove comments from line 1110 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
+		- Remove comment from line 2084 to execute the program using LightGBM.
+		- Make comments from line 2100 to 2113.
+		- Remove comment from line 2096 and 2097 to execute the program using either LightGBM, XGBoost, or Random Forest.
 	
 	iii) To execute the program using XGBoost
-		- Remove Comment from the line 1089 to execute the program using XGBoost Classifier.
-		- Make comments from lines 1103 to 1115.
-		- Remove comments from line 1099 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
-		- Remove comment from line 2038 to execute the program using XGBoost.
-		- Make comments from line 2050 to 2063.
-		- Remove comment from line 2046 and 2047 to execute the program using either LightGBM, XGBoost, or Random Forest.
+		- Remove Comment from the line 1100 to execute the program using XGBoost Classifier.
+		- Make comments lines 1103 and 1106.
+		- Make comments from lines 1114 to 1126.
+		- Remove comments from line 1110 to execute the program using XGBoost, LightGBM, or Random Forest classifier.
+		- Remove comment from line 2088 to execute the program using XGBoost.
+		- Make comments from line 2100 to 2113.
+		- Remove comment from line 2096 and 2097 to execute the program using either LightGBM, XGBoost, or Random Forest.
 	
 	iv) To Execute the program using ensemble method
-		- Remove comments from lines 1103 to 1115 to execute the program using the ensemble method.
-		- Make comments lines from 1089 to 1099.
-    		- Remove comment from line 2050 to 2063 to execute the program using ensemble method.
-    		- Make comments from 2034 to 2047 lines.
+		- Remove comments from lines 1114 to 1126 to execute the program using the ensemble method.
+		- Make comments lines from 1100 to 1110.
+    		- Remove comment from line 2100 to 2113 to execute the program using ensemble method.
+    		- Make comments from 2084 to 2097 lines.
 	
 	v) To Execute the program using original data
-		- Remove comments from the line 2024 and 2025 to execute the program using imbalance dataset.
-		- Make Comments from line 2028 and 2029.
+		- Remove comments from the line 2074 and 2075 to execute the program using imbalance dataset.
+                - Make Comments from line 2078 and 2079.
+		- Make comments from 1076 to 1080.
 	
 	vi) To execute the program using balanced data:
-		- Remove comments from the line 2028 to 2029 to execute the program using EMOTE-ENN balance dataset.
-		- Make Comments from line 2024 and 2025.
+		- Remove comments from the line 2078 to 2079 to execute the program using EMOTE-ENN balance dataset.
+		- Make Comments from line 2074 and 2075.
+		- Make comment at 1081.
 	
-	vii)  change the constant to 200, 400, 600, 800, or 1000 of the 1143 line to iterate the CRO for 200, 400, 600, 800, and 1000 times respectively.
+	vii)  change the constant to 200, 400, 600, 800, or 1000 of the 1155 line to iterate the CRO for 200, 400, 600, 800, and 1000 times respectively.
